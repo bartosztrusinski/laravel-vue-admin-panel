@@ -23,7 +23,7 @@ class UserController extends Controller
     public function store(Request $request): JsonResponse
     {
       $request->validate([
-        'email' => 'required|string|email|max:255|unique:users',
+        'email' => 'required|string|email|max:255|unique:users|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
         'password' => 'required|string|min:8|max:255',
         'name' => 'required|string|max:50',
         'surname' => 'required|string|max:50',
@@ -48,8 +48,11 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): JsonResponse
     {
+        $request->input('email') === $user->email ?: $request->validate([
+          'email' => 'required|string|email|max:255|unique:users|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+        ]);
+
         $request->validate([
-          'email' => 'required|string|email|max:255|unique:users',
           'name' => 'required|string|max:50',
           'surname' => 'required|string|max:50',
           'role' => 'required|string|in:'.implode(',', array_column(UserRoleEnum::cases(), 'value')),

@@ -15,7 +15,7 @@
       <p class="text-red-400" v-if="typeof errors === 'string'">
         {{ errors }}
       </p>
-      <form method="post" @submit.prevent="handleLogin">
+      <form @submit.prevent="handleLogin">
         <div class="mb-4 mt-2">
           <label
             class="block text-grey-darker text-sm font-bold mb-2"

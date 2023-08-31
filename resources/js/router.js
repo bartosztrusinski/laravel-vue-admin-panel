@@ -1,12 +1,14 @@
+import apiClient from "./apiClient";
 import { createRouter, createWebHistory } from "vue-router";
+import { getStoredUser, setStoredUser } from "./userStorage";
 import Dashboard from "./pages/Dashboard.vue";
 import Login from "./pages/Login.vue";
-import apiClient from "./apiClient";
-import { getStoredUser, setStoredUser } from "./userStorage";
+import Users from "./pages/Users.vue";
 
 const routes = [
   { path: "/", component: Dashboard },
   { path: "/login", component: Login },
+  { path: "/users", component: Users },
 ];
 
 const router = createRouter({

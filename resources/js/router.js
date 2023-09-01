@@ -4,11 +4,13 @@ import { getStoredUser, setStoredUser } from "./userStorage";
 import Dashboard from "./pages/Dashboard.vue";
 import Login from "./pages/Login.vue";
 import Users from "./pages/Users.vue";
+import Posts from "./pages/Posts.vue";
 
 const routes = [
   { path: "/", component: Dashboard },
   { path: "/login", component: Login },
   { path: "/users", component: Users },
+  { path: "/posts", component: Posts },
 ];
 
 const router = createRouter({

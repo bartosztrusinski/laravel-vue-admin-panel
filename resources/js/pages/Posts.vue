@@ -46,18 +46,7 @@
           #{{ tag }}
         </li>
       </ul>
-
-      <ul
-        class="text-red-400 text-sm"
-        v-for="(value, index) in createErrors"
-        :key="index"
-        v-if="typeof createErrors === 'object'"
-      >
-        <li class="list-none">{{ value[index] }}</li>
-      </ul>
-      <p class="text-red-400 text-sm" v-if="typeof createErrors === 'string'">
-        {{ createErrors }}
-      </p>
+      <ErrorList :errors="createErrors" />
 
       <button
         type="submit"
@@ -162,21 +151,7 @@
                 #{{ tag }}
               </li>
             </ul>
-
-            <ul
-              class="text-red-400 text-sm"
-              v-for="(value, index) in editErrors"
-              :key="index"
-              v-if="typeof editErrors === 'object'"
-            >
-              <li>{{ value[index] }}</li>
-            </ul>
-            <p
-              class="text-red-400 text-sm"
-              v-if="typeof editErrors === 'string'"
-            >
-              {{ editErrors }}
-            </p>
+            <ErrorList :errors="editErrors" />
 
             <div class="place-self-end mt-3">
               <button
@@ -203,6 +178,7 @@
 <script setup>
 import apiClient from "../apiClient";
 import { ref } from "vue";
+import ErrorList from "../components/ErrorList.vue";
 
 const posts = ref([]);
 const originalPostId = ref(null);
@@ -276,7 +252,7 @@ const handleCreate = async () => {
       content: "",
     };
   } catch (error) {
-    createErrors.value = error.response.data.message;
+    createErrors.value = error.response.data.errors;
   }
 };
 
@@ -297,7 +273,7 @@ const handleUpdate = async (post) => {
       post.id === updatedPost.id ? updatedPost : post
     );
   } catch (error) {
-    editErrors.value = error.response?.data?.message;
+    editErrors.value = error.response.data.errors;
   }
 };
 
@@ -317,7 +293,7 @@ const handleDelete = async (postId) => {
     await apiClient.delete(`/posts/${postId}`);
     posts.value = posts.value.filter((post) => post.id !== postId);
   } catch (error) {
-    createErrors.value = error.response.data.message;
+    createErrors.value = error.response.data.errors;
   }
 };
 
@@ -329,5 +305,5 @@ apiClient
       tags: post.tags.map((tag) => tag.name),
     }));
   })
-  .catch((error) => (createErrors.value = error.response.data.message));
+  .catch((error) => (createErrors.value = error.response.data.errors));
 </script>

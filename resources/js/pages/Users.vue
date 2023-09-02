@@ -7,13 +7,6 @@
       @submit.prevent="handleCreate"
       class="flex flex-col gap-1 flex-grow max-w-[20rem] m-auto shadow-xl rounded px-6 py-3 bg-white"
     >
-      <div class="text-red-500">
-        <div v-for="error in errors" :key="error">
-          <div v-for="message in error" :key="message">
-            {{ message }}
-          </div>
-        </div>
-      </div>
       <label v-for="(_, key) in createForm">
         <div class="first-letter:uppercase font-light text-lg">
           {{ key }}
@@ -35,6 +28,8 @@
         </select>
       </label>
 
+      <ErrorList :errors="errors" />
+
       <button
         type="submit"
         class="bg-blue-400 rounded text-white px-2 py-1 my-3 place-self-end font-semibold"
@@ -52,7 +47,7 @@
           v-if="user.id !== originalUserId"
           class="flex flex-col p-5 rounded-lg m-2 shadow-lg bg-white text-center"
         >
-          <strong class="text-lg">{{ user.name }} {{ user.surname }}</strong>
+          <h2 class="text-lg">{{ user.name }} {{ user.surname }}</h2>
           <div>{{ user.email }}</div>
           <div class="text-teal-500 font-bold uppercase">
             {{ user.role.replace("_", " ") }}
@@ -132,6 +127,7 @@
 <script setup>
 import { ref } from "vue";
 import apiClient from "../apiClient";
+import ErrorList from "../components/ErrorList.vue";
 
 const users = ref([]);
 const errors = ref({});

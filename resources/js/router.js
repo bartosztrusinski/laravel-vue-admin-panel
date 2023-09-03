@@ -22,6 +22,10 @@ router.beforeEach(async (to, from, next) => {
   try {
     const loggedInUser = getStoredUser();
 
+    if (to.path === "/login" && loggedInUser) {
+      return next("/");
+    }
+
     if (to.path !== "/login" && !loggedInUser) {
       const { data: user } = await apiClient.get("/user");
       setStoredUser(user);

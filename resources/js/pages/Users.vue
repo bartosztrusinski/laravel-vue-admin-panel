@@ -5,44 +5,20 @@
       Users
     </h1>
 
-    <form
-      @submit.prevent="handleCreate"
-      class="flex flex-col gap-1 shadow-sm bg-white rounded-lg sm:mx-5 p-5 lg:w-[20rem] lg:fixed lg:top-[17rem] lg:left-4 border-2 border-gray-200 my-4 lg:m-0 lg:border-none"
+    <div
+      class="shadow-sm bg-white rounded-lg sm:mx-5 p-5 lg:w-[20rem] lg:fixed lg:top-[17rem] lg:left-4 border-2 border-gray-200 my-4 lg:m-0 lg:border-none"
     >
       <h2 class="text-xl text-center font-semibold">Add new user</h2>
-      <label v-for="(_, key) in createForm">
-        <div class="first-letter:uppercase">
-          {{ key }}
-        </div>
-        <input
-          v-if="key !== 'role'"
-          :type="['email', 'password'].includes(key) ? key : 'text'"
-          :placeholder="`Enter ${key}`"
-          v-model="createForm[key]"
-          class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
-        />
-        <select
-          v-else
-          v-model="createForm[key]"
-          class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
+      <UserForm :handleSubmit="handleCreate">
+        <Button
+          type="submit"
+          icon="fa-solid fa-plus"
+          class="place-self-end mt-2 bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-600"
         >
-          <option value="" disabled selected>Select role</option>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-          <option value="content_editor">Content Editor</option>
-        </select>
-      </label>
-
-      <ErrorList :errors="createErrors" />
-
-      <button
-        type="submit"
-        class="bg-emerald-500 rounded text-white p-2 mt-2 place-self-end font-semibold"
-      >
-        <font-awesome-icon icon="fa-solid fa-plus" />
-        Create
-      </button>
-    </form>
+          Create
+        </Button>
+      </UserForm>
+    </div>
 
     <ul
       v-if="users.length > 0"
@@ -50,96 +26,67 @@
     >
       <li v-for="user in users" :key="user.id">
         <div
-          v-if="user.id !== originalUserId"
           class="p-3 rounded-lg shadow-sm border-2 border-solid border-gray-200 bg-white break-words"
         >
-          <h2 class="text-lg font-medium mb-1">
-            <div class="inline rounded-lg px-2 py-1 border-gray-300 border-2">
-              <font-awesome-icon icon="fa-solid fa-user" />
-            </div>
-            {{ user.name }} {{ user.surname }}
-          </h2>
-          <a :href="`mailto:${user.email}`" class="text-gray-600">{{
-            user.email
-          }}</a>
-
-          <div
-            class="flex flex-col sm:flex-row gap-2 justify-between items-end mt-2"
-          >
-            <div
-              class="text-teal-400 font-semibold m-1 text-sm uppercase border-b-2 border-teal-400"
+          <div v-if="user.id !== editedUserId">
+            <h2 class="text-lg font-medium mb-1">
+              <div class="inline rounded-lg px-2 py-1 border-gray-300 border-2">
+                <font-awesome-icon icon="fa-solid fa-user" />
+              </div>
+              {{ user.name }} {{ user.surname }}
+            </h2>
+            <a
+              :href="`mailto:${user.email}`"
+              class="text-gray-600 transition-all duration-75 hover:text-indigo-600"
             >
-              {{ user.role.replace("_", " ") }}
-            </div>
+              {{ user.email }}
+            </a>
 
-            <div>
-              <button
-                @click="handleEdit(user.id)"
-                class="p-2 mr-1 bg-amber-500 text-white rounded font-semibold"
+            <div
+              class="flex flex-col sm:flex-row gap-2 justify-between items-end mt-2"
+            >
+              <div
+                class="text-teal-400 font-semibold m-1 text-sm uppercase border-b-2 border-teal-400"
               >
-                <font-awesome-icon icon="fa-solid fa-pencil" />
-                Edit
-              </button>
-              <button
-                @click="handleDelete(user.id)"
-                class="p-2 bg-red-400 text-white rounded font-semibold"
-              >
-                <font-awesome-icon icon="fa-solid fa-trash-can" />
-                Delete
-              </button>
+                {{ user.role.replace("_", " ") }}
+              </div>
+
+              <div>
+                <Button
+                  @click="handleEdit(user.id)"
+                  icon="fa-solid fa-pencil"
+                  class="mr-1 bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-700"
+                >
+                  Edit
+                </Button>
+                <Button
+                  @click="handleDelete(user.id)"
+                  icon="fa-solid fa-trash-can"
+                  class="bg-red-400 hover:bg-red-500 focus-visible:ring-red-600"
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          v-else
-          class="p-3 rounded-lg shadow-sm border-2 border-solid border-gray-200 bg-white"
-        >
-          <form
-            @submit.prevent="handleUpdate(user.id)"
-            class="flex flex-col gap-1"
-          >
-            <label v-for="(_, key) in editForm">
-              <div class="first-letter:uppercase">
-                {{ key }}
-              </div>
-              <input
-                v-if="key !== 'role'"
-                :type="key === 'email' ? key : 'text'"
-                v-model="editForm[key]"
-                :placeholder="`Enter ${key}`"
-                class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
-              />
-              <select
-                v-else
-                v-model="editForm[key]"
-                class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="content_editor">Content Editor</option>
-              </select>
-            </label>
-
-            <ErrorList :errors="editErrors" />
-
+          <UserForm v-else :handleSubmit="handleUpdate" :user="user">
             <div class="place-self-end mt-2">
-              <button
+              <Button
                 type="submit"
-                class="bg-emerald-500 rounded text-white p-2 mr-1 font-semibold"
+                icon="fa-solid fa-check"
+                class="mr-1 bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-700"
               >
-                <font-awesome-icon icon="fa-solid fa-check" />
                 Update
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
                 @click="handleCancel"
-                class="bg-red-400 rounded text-white p-2 font-semibold"
+                icon="fa-solid fa-xmark"
+                class="bg-red-400 hover:bg-red-500 focus-visible:ring-red-600"
               >
-                <font-awesome-icon icon="fa-solid fa-xmark" />
                 Cancel
-              </button>
+              </Button>
             </div>
-          </form>
+          </UserForm>
         </div>
       </li>
     </ul>
@@ -148,84 +95,40 @@
 <script setup>
 import { ref } from "vue";
 import apiClient from "../apiClient";
-import ErrorList from "../components/ErrorList.vue";
 import Layout from "../components/Layout.vue";
+import UserForm from "../components/UserForm.vue";
+import Button from "../components/Button.vue";
 
 const users = ref([]);
-const createErrors = ref();
-const createForm = ref({
-  email: "",
-  name: "",
-  surname: "",
-  password: "",
-  role: "",
-});
-
-const editErrors = ref();
-const editForm = ref({
-  email: "",
-  name: "",
-  surname: "",
-  role: "",
-});
-
-const originalUserId = ref(null);
+const editedUserId = ref(null);
 
 const handleCancel = () => {
-  originalUserId.value = null;
+  editedUserId.value = null;
 };
 
 const handleEdit = (userId) => {
-  originalUserId.value = userId;
-  const user = users.value.find((user) => user.id === userId);
-  editForm.value = {
-    email: user.email,
-    name: user.name,
-    surname: user.surname,
-    role: user.role,
-  };
+  editedUserId.value = userId;
 };
 
-const handleCreate = async () => {
+const handleCreate = async (form) => {
   try {
-    const { data: newUser } = await apiClient.post("/users", createForm.value);
-
+    const { data: newUser } = await apiClient.post("/users", form);
     users.value.push(newUser);
-
-    createForm.value = {
-      email: "",
-      name: "",
-      surname: "",
-      password: "",
-      role: "",
-    };
-    createErrors.value = {};
   } catch (error) {
-    createErrors.value = error.response.data.errors;
+    throw error;
   }
 };
 
-const handleUpdate = async (userId) => {
+const handleUpdate = async (form, userId) => {
   try {
-    const { data: updatedUser } = await apiClient.put(
-      `/users/${userId}`,
-      editForm.value
-    );
+    const { data: updatedUser } = await apiClient.put(`/users/${userId}`, form);
 
+    editedUserId.value = null;
     users.value = users.value.map((user) =>
       user.id === updatedUser.id ? updatedUser : user
     );
-
-    editForm.value = {
-      email: "",
-      name: "",
-      surname: "",
-      role: "",
-    };
-    createErrors.value = {};
-    originalUserId.value = null;
   } catch (error) {
-    createErrors.value = error.response.data.errors;
+    throw error;
   }
 };
 
@@ -234,7 +137,7 @@ const handleDelete = async (userId) => {
     await apiClient.delete(`/users/${userId}`);
     users.value = users.value.filter((user) => user.id !== userId);
   } catch (error) {
-    createErrors.value = error.response.data.errors;
+    console.log(error);
   }
 };
 

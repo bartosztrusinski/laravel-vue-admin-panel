@@ -13,7 +13,7 @@
         <Button
           type="submit"
           icon="fa-solid fa-plus"
-          class="place-self-end mt-2 bg-emerald-500 hover:bg-emerald-600"
+          class="place-self-end mt-2 bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-600"
         >
           Create
         </Button>
@@ -43,15 +43,15 @@
               <div>
                 <Button
                   @click="handleEdit(post.id)"
-                  class="mr-1 bg-amber-500 hover:bg-amber-600"
                   icon="fa-solid fa-pencil"
+                  class="mr-1 bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-700"
                 >
                   Edit
                 </Button>
                 <Button
                   @click="handleDelete(post.id)"
-                  class="bg-red-400 hover:bg-red-500"
                   icon="fa-solid fa-trash-can"
+                  class="bg-red-400 hover:bg-red-500 focus-visible:ring-red-600"
                 >
                   Delete
                 </Button>
@@ -63,14 +63,14 @@
             <div class="place-self-end">
               <Button
                 type="submit"
-                class="bg-emerald-500 hover:bg-emerald-600 mr-1"
+                class="mr-1 bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-700"
                 icon="fa-solid fa-check"
               >
                 Update
               </Button>
               <Button
                 @click="handleCancel"
-                class="bg-red-400 hover:bg-red-500"
+                class="bg-red-400 hover:bg-red-500 focus-visible:ring-red-600"
                 icon="fa-solid fa-xmark"
               >
                 Cancel
@@ -93,23 +93,6 @@ import TagList from "../components/TagList.vue";
 const posts = ref([]);
 const editedPostId = ref(null);
 
-const handleCancel = () => {
-  editedPostId.value = null;
-};
-
-const handleCreate = async (form, tags) => {
-  try {
-    const { data: newPost } = await apiClient.post("/posts", {
-      ...form.value,
-      tags: Array.from(tags.value),
-    });
-
-    posts.value.push(newPost);
-  } catch (error) {
-    throw error;
-  }
-};
-
 const formatDate = (strDate) =>
   new Date(strDate).toLocaleString(
     {},
@@ -122,11 +105,28 @@ const formatDate = (strDate) =>
     }
   );
 
+const handleCancel = () => {
+  editedPostId.value = null;
+};
+
+const handleCreate = async (form, tags) => {
+  try {
+    const { data: newPost } = await apiClient.post("/posts", {
+      ...form,
+      tags: Array.from(tags),
+    });
+
+    posts.value.push(newPost);
+  } catch (error) {
+    throw error;
+  }
+};
+
 const handleUpdate = async (form, tags, postId) => {
   try {
     const { data: updatedPost } = await apiClient.put(`/posts/${postId}`, {
-      ...form.value,
-      tags: Array.from(tags.value),
+      ...form,
+      tags: Array.from(tags),
     });
 
     editedPostId.value = null;

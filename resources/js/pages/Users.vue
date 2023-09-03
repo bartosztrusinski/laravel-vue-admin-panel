@@ -13,7 +13,7 @@
         <Button
           type="submit"
           icon="fa-solid fa-plus"
-          class="place-self-end mt-2 bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-600"
+          class="place-self-end mt-2 bg-emerald-500 hover:bg-emerald-600 focus-visible:ring-emerald-700"
         >
           Create
         </Button>

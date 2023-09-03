@@ -56,10 +56,12 @@ const errors = ref();
 const tags = ref(new Set(post?.tags ?? []));
 const tag = ref("");
 const form = ref(
-  { ...post } ?? {
-    title: "",
-    content: "",
-  }
+  post
+    ? { ...post }
+    : {
+        title: "",
+        content: "",
+      }
 );
 
 const handleAddTag = () => {
@@ -80,7 +82,7 @@ const handleAddTag = () => {
 
 const submitForm = async () => {
   try {
-    await handleSubmit(form, tags, post?.id);
+    await handleSubmit(form.value, tags.value, post?.id);
     tags.value = new Set();
     tag.value = "";
     errors.value = "";

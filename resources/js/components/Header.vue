@@ -9,24 +9,19 @@
       />AdminPanel
     </h1>
     <div class="flex justify-center items-center gap-3">
-      <button
-        type="button"
+      <Button
+        icon="fa-solid fa-arrow-right-from-bracket"
         @click="handleLogout"
-        class="cursor-pointer hover:bg-blue-200 hover:text-blue-800 rounded-lg p-2"
+        class="hover:bg-blue-200 text-black font-normal hover:text-blue-800 rounded-lg focus-visible:ring-blue-600"
       >
         Logout
-        <font-awesome-icon
-          icon="fa-solid fa-arrow-right-from-bracket"
-          class="ml-1"
-        />
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
         @click="isMenuOpen = true"
-        class="cursor-pointer lg:hidden text-xl hover:bg-blue-200 hover:text-blue-800 rounded-lg px-2 py-1"
+        icon="fa-solid fa-bars"
+        class="lg:hidden text-black text-xl hover:bg-blue-200 hover:text-blue-800 rounded-lg px-3 py-1 focus-visible:ring-blue-600"
       >
-        <font-awesome-icon icon="fa-solid fa-bars" />
-      </button>
+      </Button>
     </div>
   </header>
 </template>
@@ -35,6 +30,7 @@ import { inject } from "vue";
 import { removeStoredUser } from "../userStorage";
 import apiClient from "../apiClient";
 import router from "../router";
+import Button from "./Button.vue";
 
 const isMenuOpen = inject("isMenuOpen");
 const handleLogout = async () => {
@@ -42,8 +38,8 @@ const handleLogout = async () => {
     await apiClient.post("/logout");
     removeStoredUser();
     router.push("/login");
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 };
 </script>

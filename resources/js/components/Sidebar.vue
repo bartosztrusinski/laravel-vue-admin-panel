@@ -5,17 +5,18 @@
   >
     <ul class="text-lg">
       <li class="flex justify-end items-center lg:hidden pb-1">
-        <font-awesome-icon
-          icon="fa-solid fa-xmark"
+        <Button
           @click="closeMenu"
-          class="text-red-500 cursor-pointer px-3 py-2 rounded-lg hover:bg-red-100"
-        />
+          icon="fa-solid fa-xmark"
+          class="text-red-600 px-3 py-2 rounded-lg hover:bg-red-200"
+        >
+        </Button>
       </li>
       <li class="pb-1">
         <RouterLink
           to="/"
           @click="closeMenu"
-          class="block p-2 hover:bg-blue-200 hover:text-blue-800 rounded-lg"
+          class="block p-2 rounded-lg hover:bg-blue-200 hover:text-blue-800 cursor-pointer transition-all duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:border-transparent focus-visible:ring-blue-600"
           active-class="bg-gray-100 font-semibold"
         >
           <font-awesome-icon icon="fa-solid fa-home" class="mr-2" />
@@ -26,7 +27,7 @@
         <RouterLink
           to="/users"
           @click="closeMenu"
-          class="block p-2 hover:bg-blue-200 hover:text-blue-800 rounded-lg"
+          class="block p-2 rounded-lg hover:bg-blue-200 hover:text-blue-800 cursor-pointer transition-all duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:border-transparent focus-visible:ring-blue-600"
           active-class="bg-gray-100 font-semibold"
         >
           <font-awesome-icon icon="fa-solid fa-users" class="mr-2" />
@@ -37,7 +38,7 @@
         <RouterLink
           to="/posts"
           @click="closeMenu"
-          class="block p-2 hover:bg-blue-200 hover:text-blue-800 rounded-lg"
+          class="block p-2 rounded-lg hover:bg-blue-200 hover:text-blue-800 cursor-pointer transition-all duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:border-transparent focus-visible:ring-blue-600"
           active-class="bg-gray-100 font-semibold"
         >
           <font-awesome-icon icon="fa-solid fa-message" class="mr-2" />
@@ -49,6 +50,7 @@
 </template>
 <script setup>
 import { inject } from "vue";
+import Button from "./Button.vue";
 const isMenuOpen = inject("isMenuOpen");
 const closeMenu = () => {
   isMenuOpen.value = false;

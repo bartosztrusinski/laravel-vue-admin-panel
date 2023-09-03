@@ -1,29 +1,39 @@
 <template>
-  <div class="bg-gray-100 min-h-screen">
-    <h1 class="text-4xl font-semibold p-2">Posts</h1>
+  <Layout>
+    <h1 class="text-4xl font-semibold px-5 py-3 text-center sm:text-start">
+      <font-awesome-icon icon="fa-solid fa-message" />
+      Posts
+    </h1>
 
-    <h2 class="text-xl text-center">Create Post</h2>
     <form
       @submit.prevent="handleCreate"
-      class="flex flex-col gap-1 flex-grow max-w-[20rem] m-auto shadow-xl rounded px-6 py-3 bg-white"
+      class="flex flex-col gap-1 shadow-sm bg-white rounded-lg sm:mx-5 p-5 lg:w-[20rem] lg:fixed lg:top-[17rem] lg:left-4 border-2 border-gray-200 my-4 lg:m-0 lg:border-none"
     >
-      <label v-for="(_, key) in createForm">
-        <div class="first-letter:uppercase font-light text-lg">
-          {{ key }}
-        </div>
+      <h2 class="text-xl text-center font-semibold">Add new post</h2>
+      <label>
+        <div class="first-letter:uppercase">Title</div>
         <input
           type="text"
-          v-model="createForm[key]"
-          class="w-full p-1 outline-none border-2 border-gray-300 rounded focus-visible:outline-none focus-visible:border-blue-400"
+          placeholder="Enter title"
+          v-model="createForm.title"
+          class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
         />
       </label>
-
-      <div>
+      <label>
+        <div class="first-letter:uppercase">Content</div>
+        <textarea
+          v-model="createForm.content"
+          placeholder="Enter content"
+          class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
+        ></textarea>
+      </label>
+      <div class="relative">
         <label>
-          <div class="first-letter:uppercase font-light text-lg">tags</div>
+          <div class="first-letter:uppercase">tags</div>
           <input
             type="text"
-            class="p-1 outline-none border-2 border-gray-300 rounded focus-visible:outline-none focus-visible:border-blue-400"
+            placeholder="Enter tag"
+            class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
             v-model="tag"
           />
         </label>
@@ -31,47 +41,52 @@
         <button
           type="button"
           @click="handleAddTag"
-          class="bg-blue-400 rounded-e text-white px-2 py-1 font-semibold"
+          class="bg-blue-400 text-white px-2 py-1 ml-1 rounded-e absolute right-0 bottom-0 h-9"
         >
-          Add Tag
+          <font-awesome-icon icon="fa-solid fa-plus" />
         </button>
       </div>
 
-      <ul v-if="tags.size > 0" class="flex flex-row flex-wrap gap-1 pt-2">
+      <ul v-if="tags.size > 0" class="flex flex-row flex-wrap gap-1 mt-1">
         <li
           v-for="tag in tags"
           :key="tag"
-          class="rounded-xl text-white px-2 py-1 font-light text-xs bg-blue-400"
+          class="rounded-full text-white px-2 py-1 font-light text-xs bg-blue-400"
         >
           #{{ tag }}
+          <button
+            type="button"
+            class="bg-blue-500 rounded-full px-1"
+            @click="handleDeleteTag(tag)"
+          >
+            <font-awesome-icon icon="fa-solid fa-xmark" />
+          </button>
         </li>
       </ul>
       <ErrorList :errors="createErrors" />
 
       <button
         type="submit"
-        class="bg-blue-400 rounded text-white px-2 py-1 mb-3 place-self-end font-semibold"
+        class="bg-emerald-500 rounded text-white p-2 mt-2 place-self-end font-semibold"
       >
-        Create
+        <font-awesome-icon icon="fa-solid fa-plus" /> Create
       </button>
     </form>
 
     <ul
       v-if="posts.length > 0"
-      class="grid grid-cols-1 gap-3 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-sm m-auto sm:max-w-none"
+      class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:p-5"
     >
       <li v-for="post in posts" :key="post.id">
         <div
           v-if="originalPostId !== post.id"
-          class="flex flex-col place-content-around min-h-full p-5 rounded-lg shadow-lg bg-white"
+          class="p-3 rounded-lg shadow-sm border-2 border-solid border-gray-200 bg-white break-words"
         >
-          <h2 class="text-xl font-semibold first-letter:uppercase">
+          <h2 class="text-xl font-medium first-letter:uppercase">
             {{ post.title }}
           </h2>
-          <div>{{ post.content }}</div>
-          <div class="text-teal-500 font-light p-1 rounded-lg">
-            {{ new Date(post.created_at).toLocaleString() }}
-          </div>
+
+          <div class="my-2">{{ post.content }}</div>
 
           <ul
             v-if="post.tags.length > 0"
@@ -86,46 +101,74 @@
             </li>
           </ul>
 
-          <div class="flex gap-1 justify-end mt-3">
-            <button
-              @click="handleEdit(post.id)"
-              class="px-2 py-1 bg-emerald-500 text-white rounded font-semibold"
-            >
-              Edit
-            </button>
-            <button
-              @click="handleDelete(post.id)"
-              class="px-2 py-1 bg-red-400 text-white rounded font-semibold"
-            >
-              Delete
-            </button>
+          <div
+            class="flex flex-col sm:flex-row gap-2 justify-between items-end mt-2"
+          >
+            <div class="text-gray-500 text-sm">
+              {{
+                new Date(post.created_at).toLocaleString(
+                  {},
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                  }
+                )
+              }}
+            </div>
+            <div>
+              <button
+                @click="handleEdit(post.id)"
+                class="p-2 mr-1 bg-amber-500 text-white rounded font-semibold"
+              >
+                <font-awesome-icon icon="fa-solid fa-pencil" />
+                Edit
+              </button>
+              <button
+                @click="handleDelete(post.id)"
+                class="p-2 bg-red-400 text-white rounded font-semibold"
+              >
+                <font-awesome-icon icon="fa-solid fa-trash-can" />
+                Delete
+              </button>
+            </div>
           </div>
         </div>
 
-        <div v-else class="flex flex-row gap-1">
+        <div
+          v-else
+          class="p-3 rounded-lg shadow-sm border-2 border-solid border-gray-200 bg-white"
+        >
           <form
             @submit.prevent="handleUpdate(post)"
-            class="flex flex-col gap-1 flex-grow m-auto shadow-xl rounded px-6 py-3 bg-white"
+            class="flex flex-col gap-2"
           >
-            <label v-for="(_, key) in editForm">
-              <div class="first-letter:uppercase font-light text-lg">
-                {{ key }}
-              </div>
+            <label>
+              <div class="first-letter:uppercase">Title</div>
               <input
                 type="text"
-                v-model="editForm[key]"
-                class="w-full p-1 outline-none border-2 border-gray-300 rounded focus-visible:outline-none focus-visible:border-blue-400"
+                placeholder="Enter title"
+                v-model="editForm.title"
+                class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
               />
             </label>
-
-            <div>
+            <label>
+              <div class="first-letter:uppercase">Content</div>
+              <textarea
+                v-model="editForm.content"
+                placeholder="Enter content"
+                class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
+              ></textarea>
+            </label>
+            <div class="relative">
               <label>
-                <div class="first-letter:uppercase font-light text-lg">
-                  tags
-                </div>
+                <div class="first-letter:uppercase">tags</div>
                 <input
                   type="text"
-                  class="p-1 outline-none border-2 border-gray-300 rounded focus-visible:outline-none focus-visible:border-blue-400"
+                  placeholder="Enter tag"
+                  class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
                   v-model="editTag"
                 />
               </label>
@@ -133,9 +176,9 @@
               <button
                 type="button"
                 @click="handleAddEditTag"
-                class="bg-blue-400 rounded-e text-white px-2 py-1 font-semibold"
+                class="bg-blue-400 text-white px-2 py-1 ml-1 rounded-e absolute right-0 bottom-0 h-9"
               >
-                Add Tag
+                <font-awesome-icon icon="fa-solid fa-plus" />
               </button>
             </div>
 
@@ -146,25 +189,35 @@
               <li
                 v-for="tag in editTags"
                 :key="tag"
-                class="rounded-xl text-white px-2 py-1 font-light text-xs bg-blue-400"
+                class="rounded-xl text-white px-1 py-1 font-light text-xs bg-blue-400 font-mono"
               >
                 #{{ tag }}
+                <button
+                  type="button"
+                  class="bg-blue-500 rounded-full px-1"
+                  @click="handleDeleteEditTag(tag)"
+                >
+                  <font-awesome-icon icon="fa-solid fa-xmark" />
+                </button>
               </li>
             </ul>
+
             <ErrorList :errors="editErrors" />
 
-            <div class="place-self-end mt-3">
+            <div class="place-self-end">
               <button
                 type="submit"
-                class="bg-emerald-500 rounded text-white px-2 py-1 mr-1 font-semibold"
+                class="bg-emerald-500 rounded text-white p-2 mr-1 font-semibold"
               >
+                <font-awesome-icon icon="fa-solid fa-check" />
                 Update
               </button>
               <button
                 type="button"
                 @click="handleCancel"
-                class="bg-red-400 rounded text-white px-2 py-1 font-semibold"
+                class="bg-red-400 rounded text-white p-2 font-semibold"
               >
+                <font-awesome-icon icon="fa-solid fa-xmark" />
                 Cancel
               </button>
             </div>
@@ -172,13 +225,14 @@
         </div>
       </li>
     </ul>
-  </div>
+  </Layout>
 </template>
 
 <script setup>
 import apiClient from "../apiClient";
 import { ref } from "vue";
 import ErrorList from "../components/ErrorList.vue";
+import Layout from "../components/Layout.vue";
 
 const posts = ref([]);
 const originalPostId = ref(null);
@@ -198,6 +252,14 @@ const editForm = ref({
 const editErrors = ref();
 const editTags = ref(new Set());
 const editTag = ref("");
+
+const handleDeleteEditTag = (tag) => {
+  editTags.value.delete(tag);
+};
+
+const handleDeleteTag = (tag) => {
+  tags.value.delete(tag);
+};
 
 const handleAddTag = () => {
   if (tag.value.length === 0 || tag.value.length > 20) {

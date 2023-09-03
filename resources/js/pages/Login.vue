@@ -1,52 +1,28 @@
 <template>
   <div class="mx-auto max-w-md mt-10 bg-gray-100 p-4 rounded-lg">
-    <div
-      class="bg-white shadow-lg rounded-lg px-8 pt-6 pb-8 mb-2 flex flex-col"
-    >
-      <h1 class="py-5 font-bold text-3xl">Login</h1>
-      <ul
-        class="text-red-400"
-        v-for="(value, index) in errors"
-        :key="index"
-        v-if="typeof errors === 'object'"
-      >
-        <li>{{ value[0] }}</li>
-      </ul>
-      <p class="text-red-400" v-if="typeof errors === 'string'">
-        {{ errors }}
-      </p>
-      <form @submit.prevent="handleLogin">
-        <div class="mb-4 mt-2">
-          <label
-            class="block text-grey-darker text-sm font-bold mb-2"
-            for="username"
-          >
-            Email Address
-          </label>
+    <div class="bg-white shadow-lg rounded-lg p-4 mb-2">
+      <h1 class="pb-5 font-bold text-3xl">Login</h1>
+      <form @submit.prevent="handleLogin" class="flex flex-col gap-2">
+        <label>
+          <div>Email Address</div>
           <input
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
-            id="username"
-            type="text"
+            class="appearance-none border-2 rounded w-full p-2 text-grey-darker focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
+            type="email"
+            required
             v-model="form.email"
-            required
           />
-        </div>
-        <div class="mb-4">
-          <label
-            class="block text-grey-darker text-sm font-bold mb-2"
-            for="password"
-          >
-            Password
-          </label>
+        </label>
+        <label>
+          <div>Password</div>
           <input
-            class="shadow appearance-none border border-red rounded w-full py-2 px-3 text-grey-darker mb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
-            id="password"
+            class="appearance-none border-2 rounded w-full p-2 text-grey-darker mb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
             type="password"
-            v-model="form.password"
             required
+            v-model="form.password"
           />
-        </div>
-        <div class="flex items-center justify-between">
+        </label>
+        <ErrorList :errors="errors" />
+        <div class="flex items-center justify-end mt-2">
           <button
             class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-800 focus-visible:border-transparent"
             type="submit"
@@ -56,15 +32,15 @@
         </div>
       </form>
     </div>
-    <button @click="handleLogOut">Log Out</button>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import ErrorList from "../components/ErrorList.vue";
 import apiClient from "../apiClient";
-import { setStoredUser, removeStoredUser } from "../userStorage";
+import { setStoredUser } from "../userStorage";
 
 const errors = ref();
 const router = useRouter();
@@ -89,24 +65,11 @@ const handleLogin = async () => {
     setStoredUser(user);
 
     router.push("/");
-  } catch (e) {
-    if (e.response?.data?.errors) {
-      errors.value = Object.values(e.response.data.errors);
+  } catch (error) {
+    if (error.response.data.errors) {
+      errors.value = Object.values(error.response.data.errors);
     } else {
-      errors.value = e?.response?.data?.message || e.message;
-    }
-  }
-};
-
-const handleLogOut = async () => {
-  try {
-    await apiClient.post("/logout");
-    removeStoredUser();
-  } catch (e) {
-    if (e.response?.data?.errors) {
-      errors.value = Object.values(e.response.data.errors);
-    } else {
-      errors.value = e?.response?.data?.message || e.message;
+      errors.value = error.response.data.message;
     }
   }
 };

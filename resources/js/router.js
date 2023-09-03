@@ -11,6 +11,7 @@ const routes = [
   { path: "/login", component: Login },
   { path: "/users", component: Users },
   { path: "/posts", component: Posts },
+  { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 
 const router = createRouter({

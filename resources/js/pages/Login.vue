@@ -6,7 +6,7 @@
         <label>
           <div>Email Address</div>
           <input
-            class="appearance-none border-2 rounded w-full p-2 text-grey-darker focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
+            class="appearance-none border-2 rounded w-full p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
             type="email"
             required
             v-model="form.email"
@@ -15,7 +15,7 @@
         <label>
           <div>Password</div>
           <input
-            class="appearance-none border-2 rounded w-full p-2 text-grey-darker mb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
+            class="appearance-none border-2 rounded w-full p-2 mb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-transparent"
             type="password"
             required
             v-model="form.password"

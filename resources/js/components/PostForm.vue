@@ -7,7 +7,7 @@
         placeholder="Enter title"
         v-model="form.title"
         required
-        class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
+        class="appearance-none w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
       />
     </label>
     <label>
@@ -16,7 +16,7 @@
         v-model="form.content"
         placeholder="Enter content"
         required
-        class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
+        class="appearance-none w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
       ></textarea>
     </label>
     <div class="relative">
@@ -25,18 +25,17 @@
         <input
           type="text"
           placeholder="Enter tag"
-          class="w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
+          class="appearance-none w-full p-1 outline-none border-2 border-gray-200 rounded focus-visible:outline-none focus-visible:border-blue-400"
           v-model="tag"
         />
       </label>
 
-      <button
-        type="button"
+      <Button
         @click="handleAddTag"
-        class="bg-blue-400 hover:bg-blue-500 cursor-pointer transition-all duration-75 text-white px-2 py-1 ml-1 rounded-e absolute right-0 bottom-0 h-9"
+        icon="fa-solid fa-plus"
+        class="bg-blue-400 hover:bg-blue-500 focus-visible:ring-blue-500 px-2 py-1 ml-1 rounded-none rounded-e absolute right-0 bottom-0 h-9"
       >
-        <font-awesome-icon icon="fa-solid fa-plus" />
-      </button>
+      </Button>
     </div>
 
     <TagList :tags="tags" class="mt-1" :editable="true" />
@@ -49,6 +48,7 @@
 import ErrorList from "../components/ErrorList.vue";
 import { defineProps, ref } from "vue";
 import TagList from "./TagList.vue";
+import Button from "./Button.vue";
 
 const { handleSubmit, post } = defineProps(["handleSubmit", "post"]);
 

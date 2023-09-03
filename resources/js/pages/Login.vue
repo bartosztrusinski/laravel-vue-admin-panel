@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-md mt-10 bg-gray-100 p-4 rounded-lg">
+  <div class="mx-auto max-w-md mt-10 bg-gray-200 p-4 rounded-lg">
     <div class="bg-white shadow-lg rounded-lg p-4 mb-2">
       <h1 class="pb-5 font-bold text-3xl">Login</h1>
       <form @submit.prevent="handleLogin" class="flex flex-col gap-2">
@@ -23,12 +23,12 @@
         </label>
         <ErrorList :errors="errors" />
         <div class="flex items-center justify-end mt-2">
-          <button
-            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-800 focus-visible:border-transparent"
+          <Button
             type="submit"
+            class="bg-blue-500 hover:bg-blue-600 focus-visible:ring-blue-800"
           >
             Sign In
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -41,6 +41,7 @@ import { useRouter } from "vue-router";
 import ErrorList from "../components/ErrorList.vue";
 import apiClient from "../apiClient";
 import { setStoredUser } from "../userStorage";
+import Button from "../components/Button.vue";
 
 const errors = ref();
 const router = useRouter();

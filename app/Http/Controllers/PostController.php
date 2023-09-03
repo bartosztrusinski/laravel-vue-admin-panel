@@ -39,7 +39,7 @@ class PostController extends Controller
 
         $post->tags()->attach($tags);
 
-        $post->tags = $tags;
+        $post->tags = $request->tags;
 
         return response()->json($post, 201);
     }
@@ -72,6 +72,8 @@ class PostController extends Controller
         $post->update($request->all());
 
         $post->tags()->sync($tags);
+        
+        $post->tags = $request->tags;
 
         return response()->json($post, 200);
     }

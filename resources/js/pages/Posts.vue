@@ -20,8 +20,21 @@
       </PostForm>
     </div>
 
+    <div class="sm:mx-5 my-2 shadow-sm relative">
+      <font-awesome-icon
+        icon="fa-solid fa-search"
+        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl pointer-events-none"
+      />
+      <input
+        type="search"
+        placeholder="Search posts"
+        class="appearance-none border-2 border-gray-200 w-full p-3 pl-11 rounded-xl focus-visible:border-blue-500 focus:outline-none"
+        v-model="searchTerm"
+      />
+    </div>
+
     <ul
-      v-if="posts.length > 0"
+      v-if="posts.length > 0 && !isLoading"
       class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:p-5"
     >
       <li v-for="post in posts" :key="post.id">
@@ -80,18 +93,100 @@
         </div>
       </li>
     </ul>
+    <div v-else-if="posts.length === 0">
+      <h2 class="text-2xl my-5 font-medium text-center">No posts found :-(</h2>
+    </div>
+    <div v-else class="flex flex-row items-center justify-center py-2 sm:px-5">
+      <Loader />
+    </div>
+
+    <Pagination
+      v-if="posts.length > 0"
+      :currentPage="currentPage"
+      :isLastPage="currentPage === lastPage"
+      :isFirstPage="currentPage === 1"
+      :nextPage="nextPage"
+      :prevPage="prevPage"
+      class="py-2 sm:px-5"
+    />
   </Layout>
 </template>
 <script setup>
 import apiClient from "../apiClient";
-import { ref } from "vue";
+import { ref, watchEffect, watch, getCurrentInstance } from "vue";
 import Layout from "../components/Layout.vue";
 import PostForm from "../components/PostForm.vue";
 import Button from "../components/Button.vue";
 import TagList from "../components/TagList.vue";
+import { useRouter, useRoute } from "vue-router";
+import Loader from "../components/Loader.vue";
+import Pagination from "../components/Pagination.vue";
+import debounce from "../debounce";
 
+const router = useRouter();
+const route = useRoute();
 const posts = ref([]);
 const editedPostId = ref(null);
+const searchTerm = ref(route.query.search || "");
+const currentPage = ref(parseInt(route.query.page) || 1);
+const lastPage = ref(Infinity);
+const isLoading = ref(false);
+
+const nextPage = () => {
+  currentPage.value++;
+};
+
+const prevPage = () => {
+  currentPage.value--;
+};
+
+watchEffect(() => {
+  if (currentPage.value > lastPage.value) {
+    currentPage.value = lastPage.value;
+  }
+
+  if (currentPage.value < 1) {
+    currentPage.value = 1;
+  }
+});
+
+watchEffect(() => {
+  const query = {
+    page: currentPage.value,
+  };
+
+  if (searchTerm.value) {
+    query.search = searchTerm.value;
+  }
+
+  router.push({ query });
+});
+
+const fetchPosts = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await apiClient.get("/posts", {
+      params: {
+        page: currentPage.value,
+        search: searchTerm.value,
+      },
+    });
+
+    posts.value = data.data.map((post) => ({
+      ...post,
+      tags: new Set(post.tags),
+    }));
+    lastPage.value = data.last_page;
+    isLoading.value = false;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const debouncedFetchPosts = debounce(fetchPosts, 400);
+
+watch(currentPage, fetchPosts, { immediate: true });
+watch(searchTerm, debouncedFetchPosts);
 
 const formatDate = (strDate) =>
   new Date(strDate).toLocaleString(
@@ -116,7 +211,10 @@ const handleCreate = async (form, tags) => {
       tags: Array.from(tags),
     });
 
-    posts.value.push(newPost);
+    newPost.tags = new Set(newPost.tags);
+
+    posts.value.pop();
+    posts.value.unshift(newPost);
   } catch (error) {
     throw error;
   }
@@ -128,6 +226,8 @@ const handleUpdate = async (form, tags, postId) => {
       ...form,
       tags: Array.from(tags),
     });
+
+    updatedPost.tags = new Set(updatedPost.tags);
 
     editedPostId.value = null;
     posts.value = posts.value.map((post) =>
@@ -150,14 +250,4 @@ const handleDelete = async (postId) => {
     console.log(error);
   }
 };
-
-apiClient
-  .get("/posts")
-  .then((response) => {
-    posts.value = response.data.map((post) => ({
-      ...post,
-      tags: new Set(post.tags.map((tag) => tag.name)),
-    }));
-  })
-  .catch((error) => console.log(error));
 </script>

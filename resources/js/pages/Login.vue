@@ -67,10 +67,10 @@ const handleLogin = async () => {
 
     router.push("/");
   } catch (error) {
-    if (error.response.data.errors) {
+    if (error.response?.data?.errors) {
       errors.value = Object.values(error.response.data.errors);
     } else {
-      errors.value = error.response.data.message;
+      errors.value = error.response?.data?.message ?? error.message;
     }
   }
 };

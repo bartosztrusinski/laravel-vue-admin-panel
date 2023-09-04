@@ -30,7 +30,7 @@
 </template>
 <script setup>
 import ErrorList from "../components/ErrorList.vue";
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 
 const { handleSubmit, user } = defineProps(["handleSubmit", "user"]);
 const errors = ref();
@@ -57,7 +57,11 @@ const submitForm = async () => {
     };
     errors.value = null;
   } catch (error) {
-    errors.value = error.response.data.errors;
+    if (error.response?.data?.errors) {
+      errors.value = Object.values(error.response.data.errors);
+    } else {
+      errors.value = error.response?.data?.message ?? error.message;
+    }
   }
 };
 </script>

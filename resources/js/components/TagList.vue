@@ -18,7 +18,6 @@
   </ul>
 </template>
 <script setup>
-import { defineProps } from "vue";
 const { tags, editable } = defineProps(["tags", "editable"]);
 const handleDelete = (tag) => {
   tags.delete(tag);

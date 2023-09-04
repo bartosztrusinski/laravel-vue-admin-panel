@@ -12,9 +12,23 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json(Post::with('tags')->get(), 200);
+        $search = $request->input('search');
+
+        $posts = Post::where('title', 'LIKE', "%{$search}%")
+        ->orWhere('content', 'LIKE', "%{$search}%")
+        ->orWhereHas('tags', function ($query) use ($search) {
+          $query->where('name', 'LIKE', "%{$search}%");
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(6);
+
+        foreach ($posts as $post) {
+          $post->tags = $post->tags()->pluck('name');
+        }
+
+        return response()->json($posts, 200);
     }
 
     /**
@@ -25,20 +39,21 @@ class PostController extends Controller
 
         $request->validate([
           'title' => 'required|string|max:50',
-          'content' => 'required|string|min:10',
+          'content' => 'required|string|min:10|max:255',
           'tags' => 'array',
         ]);
 
         $tags = [];
 
         foreach ($request->tags as $tag) {
+          $request->validate([
+            'tags.name' => 'string|min:1|max:20',
+          ]);
           $tags[] = Tag::firstOrCreate(['name' => $tag])->id;
         }
 
         $post = Post::create($request->all());
-
         $post->tags()->attach($tags);
-
         $post->tags = $request->tags;
 
         return response()->json($post, 201);
@@ -66,13 +81,14 @@ class PostController extends Controller
         $tags = [];
 
         foreach ($request->tags as $tag) {
+          $request->validate([
+            'tags.name' => 'string|min:1|max:20',
+          ]);
           $tags[] = Tag::firstOrCreate(['name' => $tag])->id;
         }
 
         $post->update($request->all());
-
         $post->tags()->sync($tags);
-        
         $post->tags = $request->tags;
 
         return response()->json($post, 200);
@@ -84,9 +100,7 @@ class PostController extends Controller
     public function destroy(Post $post): JsonResponse
     {
         $post = Post::findOrFail($post->id);
-
         $post->tags()->detach();
-
         $post->delete();
 
         return response()->json(null, 204);

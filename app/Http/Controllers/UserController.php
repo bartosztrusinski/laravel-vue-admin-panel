@@ -12,9 +12,18 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json(User::all(['id', 'name', 'surname', 'email', 'role']), 200);
+        $search = $request->input('search');
+
+        $users = User::where('name', 'LIKE', "%{$search}%")
+        ->orWhere('surname', 'LIKE', "%{$search}%")
+        ->orWhere('email', 'LIKE', "%{$search}%")
+        ->orWhere('role', 'LIKE', "%{$search}%")
+        ->orderBy('created_at', 'desc')
+        ->paginate(6, ['id', 'name', 'surname', 'email', 'role']);
+
+        return response()->json($users, 200);
     }
 
     /**
@@ -24,7 +33,7 @@ class UserController extends Controller
     {
       $request->validate([
         'email' => 'required|string|email|max:255|unique:users|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-        'password' => 'required|string|min:8|max:255',
+        'password' => 'required|string|min:8|max:64',
         'name' => 'required|string|max:50',
         'surname' => 'required|string|max:50',
         'role' => 'required|string|in:'.implode(',', array_column(UserRoleEnum::cases(), 'value')),
@@ -69,7 +78,6 @@ class UserController extends Controller
     public function destroy(User $user): JsonResponse
     {
         $user = User::findOrFail($user->id);
-
         $user->delete();
 
         return response()->json(null, 204);

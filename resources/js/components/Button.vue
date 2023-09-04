@@ -7,7 +7,5 @@
   </button>
 </template>
 <script setup>
-import { defineProps } from "vue";
-
 const { icon } = defineProps(["icon"]);
 </script>

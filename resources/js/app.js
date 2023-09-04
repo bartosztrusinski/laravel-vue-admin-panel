@@ -15,6 +15,9 @@ import {
   faArrowRightFromBracket,
   faShieldHalved,
   faCheck,
+  faArrowRight,
+  faArrowLeft,
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -30,7 +33,10 @@ library.add(
   faBars,
   faArrowRightFromBracket,
   faShieldHalved,
-  faCheck
+  faCheck,
+  faArrowRight,
+  faArrowLeft,
+  faSearch
 );
 
 const app = createApp(App);

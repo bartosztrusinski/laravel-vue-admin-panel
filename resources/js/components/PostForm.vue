@@ -35,6 +35,7 @@
         icon="fa-solid fa-plus"
         class="bg-blue-400 hover:bg-blue-500 focus-visible:ring-blue-500 px-2 py-1 ml-1 rounded-none rounded-e absolute right-0 bottom-0 h-9"
       >
+        <span class="sr-only">Add tag</span>
       </Button>
     </div>
 
@@ -46,9 +47,9 @@
 </template>
 <script setup>
 import ErrorList from "../components/ErrorList.vue";
-import { defineProps, ref } from "vue";
 import TagList from "./TagList.vue";
 import Button from "./Button.vue";
+import { ref } from "vue";
 
 const { handleSubmit, post } = defineProps(["handleSubmit", "post"]);
 
@@ -91,7 +92,11 @@ const submitForm = async () => {
       content: "",
     };
   } catch (error) {
-    errors.value = error.response.data.errors;
+    if (error.response?.data?.errors) {
+      errors.value = Object.values(error.response.data.errors);
+    } else {
+      errors.value = error.response?.data?.message ?? error.message;
+    }
   }
 };
 </script>

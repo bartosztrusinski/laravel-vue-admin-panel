@@ -113,7 +113,7 @@
 </template>
 <script setup>
 import apiClient from "../apiClient";
-import { ref, watchEffect, watch, getCurrentInstance } from "vue";
+import { ref, watchEffect, watch } from "vue";
 import Layout from "../components/Layout.vue";
 import PostForm from "../components/PostForm.vue";
 import Button from "../components/Button.vue";

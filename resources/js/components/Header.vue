@@ -12,14 +12,14 @@
       <Button
         icon="fa-solid fa-arrow-right-from-bracket"
         @click="handleLogout"
-        class="hover:bg-blue-200 text-black font-normal hover:text-blue-800 rounded-lg focus-visible:ring-blue-600"
+        class="hover:bg-blue-200 !text-black font-normal hover:text-blue-800 rounded-lg focus-visible:ring-blue-600"
       >
         Logout
       </Button>
       <Button
         @click="isMenuOpen = true"
         icon="fa-solid fa-bars"
-        class="lg:hidden text-black text-xl hover:bg-blue-200 hover:text-blue-800 rounded-lg px-3 py-1 focus-visible:ring-blue-600"
+        class="lg:hidden !text-black text-xl hover:bg-blue-200 hover:text-blue-800 rounded-lg px-3 py-1 focus-visible:ring-blue-600"
       >
       </Button>
     </div>
